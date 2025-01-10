@@ -35,7 +35,7 @@ export LOCAL_PASSWORD_NEW="new_secure_password"
 sudo -E bash run_nxai_installer.sh
 ```
 
-Or, if you want to have more control over the setup: 
+Or, if you want to easily modify the above and other variables:
 
 ```bash
 # Step 1: Set environment variables by editing set_nxai_installer.sh and run:
