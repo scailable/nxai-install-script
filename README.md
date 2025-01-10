@@ -16,7 +16,7 @@ After setting the necessary environment variables and running the installer, the
 6. **Install Plugins**: Installs the Nx AI plugin and OAAX runtime.
 7. **Connect to Nx Cloud**: Links the local system to Nx Cloud and merges systems with the same name.
 8. **Optional Components**: Installs a test camera and/or test stream if enabled.
-9. **Autorun AI**: Starts recording on devices, enables default model, and generates bounding boxes.
+9. **Autorun AI**: Starts recording on devices, enables AI default model, and generates bounding boxes.
 
 ## Prerequisites
 
