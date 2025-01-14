@@ -151,9 +151,12 @@ fi
 : "${NX_AI_OAAX_RUNTIME_DOWNLOAD_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/OAAX/runtimes/v4-1/cpu-x86_64-ort.tar.gz"}"
 
 # Test Camera / Stream 
+: "${ENABLE_TESTCAMERA:=false}"  # Enable testcamera
 : "${MOVIE_DIR:="/opt/movies"}"  # Directory to store test camera footage
 : "${MOVIE_URL:="http://www.robinvanemden.dds.nl/walking.mp4"}"  # Test movie URL
 : "${MOVIE_FILE:=$(basename "$MOVIE_URL")}"  # Extract the filename from the URL
+
+: "${ENABLE_TEST_STREAM:=true}"  # Enable test stream
 : "${STREAM_URL:="rtsp://5.75.171.116:8554/face-blur-4-people"}"  # Stream URL
 : "${STREAM_USER:=""}"  # Stream username
 : "${STREAM_PASS:=""}"  # Stream password
