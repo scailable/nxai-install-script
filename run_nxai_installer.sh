@@ -144,7 +144,7 @@ fi
 # Nx Server Download & Package URLs
 : "${NX_SERVER_DOWNLOAD_URL:="https://updates.networkoptix.com/metavms/39873/linux/metavms-server-6.0.1.39873-linux_x64.deb"}"
 
-: "${NX_AI_PLUGIN_VERSION:="nightly"}"
+: "${NX_AI_PLUGIN_VERSION:=""}"
 : "${NX_AI_PLUGIN_INSTALL_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/NXAIPlugin/install.sh"}"
 : "${NX_AI_PLUGIN_DOWNLOAD_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/NXAIManager/v4-1/nxai_manager-x86_64.tgz"}"
 
@@ -559,8 +559,16 @@ install_plugin() {
     echo ""
     echo "=== Installing NxAI Plugin ==="
 
+    NX_AI_PLUGIN_VERSION_STRING=""
+    if [ -z "$NX_AI_PLUGIN_VERSION" ]; then
+        echo "Version: Latest release."
+    else
+        echo "Version: ${NX_AI_PLUGIN_VERSION}."
+        NX_AI_PLUGIN_VERSION_STRING="package=${NX_AI_PLUGIN_VERSION}"
+    fi
+
     # The remote install script is executed silently, with output suppressed.
-    bash -c "$(curl -fsSL "$NX_AI_PLUGIN_INSTALL_URL")" package="$NX_AI_PLUGIN_VERSION" >/dev/null 2>&1 || {
+    bash -c "$(curl -fsSL "$NX_AI_PLUGIN_INSTALL_URL")" -- "$NX_AI_PLUGIN_VERSION_STRING" || {
         echo "Error: Failed to install NxAI plugin from $NX_AI_PLUGIN_INSTALL_URL"
         exit 1
     }
