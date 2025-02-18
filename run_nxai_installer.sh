@@ -146,9 +146,9 @@ fi
 
 : "${NX_AI_PLUGIN_VERSION:=""}"
 : "${NX_AI_PLUGIN_INSTALL_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/NXAIPlugin/install.sh"}"
-: "${NX_AI_PLUGIN_DOWNLOAD_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/NXAIManager/v4-1/nxai_manager-x86_64.tgz"}"
+: "${NX_AI_PLUGIN_DOWNLOAD_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/NXAIManager/release/nxai_manager-x86_64.tgz"}"
 
-: "${NX_AI_OAAX_RUNTIME_DOWNLOAD_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/OAAX/runtimes/v4-1/cpu-x86_64-ort.tar.gz"}"
+: "${NX_AI_OAAX_RUNTIME_DOWNLOAD_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/OAAX/runtimes/release/cpu-x86_64-ort.tar.gz"}"
 
 # Test Camera / Stream 
 : "${ENABLE_TESTCAMERA:=false}"  # Enable testcamera
