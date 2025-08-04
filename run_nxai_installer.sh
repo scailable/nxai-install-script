@@ -97,6 +97,35 @@ if [ "${#short_password_vars[@]}" -gt 0 ]; then
 fi
 
 ###############################################################################
+# CPU Architecture Detection and Mapping
+#   - Detect the machine's CPU architecture using available commands.
+#   - Map detected architecture to normalized names used by the script.
+#   - Exit with error if detection fails.
+###############################################################################
+detect_and_map_arch() {
+  if command -v lscpu &>/dev/null; then
+    CPU_ARCH=$(lscpu | awk '/Architecture/ {print $2}')
+  elif command -v uname &>/dev/null; then
+    CPU_ARCH=$(uname -m)
+  else
+    echo "Error: Unable to determine CPU architecture" >&2
+    return 1
+  fi
+
+  case "$CPU_ARCH" in
+    armv7l) MAPPED_ARCH="arm32" ;;
+    aarch64) MAPPED_ARCH="arm64" ;;
+    x86_64) MAPPED_ARCH="x64" ;;
+    *) MAPPED_ARCH="$CPU_ARCH" ;;
+  esac
+}
+
+detect_and_map_arch || { echo "Failed to detect CPU architecture. Exiting."; exit 1; }
+
+echo "CPU architecture: $CPU_ARCH"
+echo "Mapped architecture: $MAPPED_ARCH"
+
+###############################################################################
 # Environment Variables and Defaults
 #   - Set defaults for environment variables if not already defined.
 #   - Notify the user if any required variables are unset.
@@ -141,16 +170,23 @@ fi
 
 : "${LOCAL_SERVER_URL:="https://localhost:7001"}"  # Local Nx server URL
 
-# Nx Server Download & Package URLs
-: "${NX_SERVER_DOWNLOAD_URL:="https://updates.networkoptix.com/metavms/39873/linux/metavms-server-6.0.1.39873-linux_x64.deb"}"
 
-: "${NX_AI_PLUGIN_VERSION:=""}"
+# Set architecture base depending on mapped_arch
+if [[ "$MAPPED_ARCH" == "arm32" || "$MAPPED_ARCH" == "arm64" ]]; then
+  arch_base="${MAPPED_ARCH%%[0-9]*}"
+else
+   arch_base="linux"
+fi
+: "${NX_SERVER_DOWNLOAD_URL:="https://updates.networkoptix.com/metavms/41290/$arch_base/metavms-server-6.0.5.41290-linux_$MAPPED_ARCH.deb"}"
+echo SERVER URL "$NX_SERVER_DOWNLOAD_URL"
+
+
+: "${NX_AI_PLUGIN_VERSION:="release"}"
 : "${NX_AI_PLUGIN_INSTALL_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/NXAIPlugin/install.sh"}"
-: "${NX_AI_PLUGIN_DOWNLOAD_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/NXAIManager/release/nxai_manager-x86_64.tgz"}"
+: "${NX_AI_PLUGIN_DOWNLOAD_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/NXAIManager/$NX_AI_PLUGIN_VERSION/nxai_manager-$CPU_ARCH.tgz"}"
+: "${NX_AI_OAAX_RUNTIME_DOWNLOAD_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/OAAX/runtimes/$NX_AI_PLUGIN_VERSION/cpu-$CPU_ARCH-ort.tar.gz"}"
 
-: "${NX_AI_OAAX_RUNTIME_DOWNLOAD_URL:="https://artifactory.nxvms.dev/artifactory/nxai_open/OAAX/runtimes/release/cpu-x86_64-ort.tar.gz"}"
-
-# Test Camera / Stream 
+# Test Camera / Stream
 : "${ENABLE_TESTCAMERA:=false}"  # Enable testcamera
 : "${MOVIE_DIR:="/opt/movies"}"  # Directory to store test camera footage
 : "${MOVIE_URL:="http://www.robinvanemden.dds.nl/walking.mp4"}"  # Test movie URL
@@ -289,7 +325,6 @@ report_system_info() {
     else
         echo "Warning: Unable to determine OS version."
     fi
-
     # glibc version detection via 'ldd'
     if command -v ldd &>/dev/null; then
         local glibc_version
@@ -438,7 +473,7 @@ get_login_token() {
         echo "Error: Authentication with Nx server failed."
         exit 1
     fi
-    
+
     # Echo the token so it can be captured in a calling function.
     echo "$token"
 }
